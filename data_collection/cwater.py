@@ -4,6 +4,7 @@
 # >pip install pyserial (when internet connected)
 
 import time
+import datetime
 import serial
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,6 +58,13 @@ def fitting(dx,V):
  file2.write(str(alpha)+' '+str(beta)+' '+str(coe)+'\n')
  return alpha,beta,coe
 ###########################################################
+# pick measuring point
+print("Pick measuring point \n(1) Sea \n(2) Nissan \n(3) Tap Water \n")
+n = int(input("Pick (1-3):"))
+opt = ["sea", "nissan", "tap_water"]
+point = opt[n-1]
+
+###########################################################
 # connect cwater then do the following to find it
 import serial.tools.list_ports
 ports = serial.tools.list_ports.comports(include_links=False)
@@ -73,8 +81,9 @@ time.sleep(0.1)
 ###########################################################
 # initialize
 second1=time.time()
-filename1='adc'+str(int(second1))+'.dat'
-filename2='abc'+str(int(second1))+'.dat'
+date=datetime.datetime.now().date()
+filename1='./data/'+ point + '/data_'+str(date)+'.dat'
+filename2='./data/'+ point + '/value_'+str(date)+'.dat'
 file1 = open(filename1, "w")
 file2 = open(filename2, "w")
 L=65
