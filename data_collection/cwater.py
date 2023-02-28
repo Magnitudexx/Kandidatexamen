@@ -4,17 +4,17 @@
 # >pip install pyserial (when internet connected)
 
 import time
-import datetime
 import serial
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 
 ###########################################################
 # average definition
 def average(V):
  avy=0.0
  aN=64.0
- for M in range(1,L): # stop at "M=L", loop at "M=L" is not executed
+ for M in range(1,L): # stop at "65", loop at "65" is not executed
   avy=avy+V[M]
 
  avy=avy/aN
@@ -52,9 +52,9 @@ def fitting(dx,V):
   S=S+(V[M]-alpha-beta*x)**2
   St=St+(V[M]-avy)**2
 
- coe=1.0-S/St
- beta=abs(beta)
- print('curve python=',alpha,beta,coe)
+ coe=np.sqrt(1.0-S/St)
+ beta=1.0/abs(beta)
+ print(alpha,beta,coe)
  file2.write(str(alpha)+' '+str(beta)+' '+str(coe)+'\n')
  return alpha,beta,coe
 ###########################################################
@@ -63,7 +63,6 @@ print("Pick measuring point \n(1) Sea \n(2) Nissan \n(3) Tap Water \n")
 n = int(input("Pick (1-3):"))
 opt = ["sea", "nissan", "tap_water"]
 point = opt[n-1]
-
 ###########################################################
 # connect cwater then do the following to find it
 import serial.tools.list_ports
@@ -72,11 +71,32 @@ for port in ports :
     print(port.device)
 
 # open and configure the serial connection
-nocoli = serial.Serial(port='/dev/ttyUSB0',baudrate=9600,parity=serial.PARITY_NONE,
+nocoli = serial.Serial(port='/dev/ttyUSB0',baudrate=76200,parity=serial.PARITY_NONE,
     stopbits=1,bytesize=8)
 nocoli.flushInput()
 nocoli.flushOutput()
 time.sleep(0.1)
+
+nocoli.write(b'Y') # send nocoli 'Y' to communicate
+# 0.01 second delay
+time.sleep(0.01)
+
+# readline() reads up to one line, including the \n at the end
+
+b1 = nocoli.readline() # return received by MCU
+b2=b1[0:len(b1)-1] # get rid \n at the end
+print(b2)
+#print(b2.decode('ascii'))
+b1 = nocoli.readline() # from nocoli 'Measure Y/N'
+K=len(b1)
+b2=b1[0:K-1]
+#print(b2.decode('ascii'))
+
+nocoli.write(b'Y')
+b1 = nocoli.readline()
+K=len(b1)
+b2=b1[0:K-1]
+print(b2.decode('ascii'))
 
 ###########################################################
 # initialize
@@ -95,64 +115,85 @@ coe=0.0
 
 ###########################################################
 # (0) first 64=reference
-# timer0, scale=3/64,   50*(4*ADC+interval/0.01s)
+# timer0, scale=3/64,   64*(4*ADC+interval/0.005s)
 for M in range(1,L): # stop at "L", loop at "L" is not executed
  adc = nocoli.read(2) # read (high,low)
  n = int.from_bytes(adc,byteorder='big')
- file1.write(str(M)+' '+str(n)+'\n')
  ay=np.append(ay,n)
  V[M]=float(n)
 
 Vref = average(V)
-print('Vmean python=',Vref)
-# receive mega8535 results
-adc = nocoli.read(2) # read (high,low)
-a1 = int.from_bytes(adc,byteorder='big')
-print('Vmean mega8535=',a1)
 
+###########################################################
 second2=time.time()
 print("time lapse=",second2-second1)
+
 ###########################################################
-# (1) scale=3/64, 2*64*(ADC+interval/0.01s)
-# middle one to di-concentrate
-dx=1.0
-for N in range(1,3):
+# (2) scale=2>8
+dx=0.01
+for N in range(1,11):
  for M in range(1,L):
   adc = nocoli.read(2) # read (high,low)
   n = int.from_bytes(adc,byteorder='big')
-  file1.write(str(M)+' '+str(n)+'\n')
+  ay=np.append(ay,n)
+  V[M]=np.log(abs(float(n)-Vref))
+ fitting(dx,V)
+###########################################################
+second2=time.time()
+print("time lapse=",second2-second1)
+
+aalpha=0.0
+abeta=np.zeros(0,dtype=float)
+acoe=0.0
+###########################################################
+# (3) scale=3/64, 10*64*(4*ADC+interval/0.005s)
+# middle one to di-concentrate
+dx=0.01
+for N in range(1,11):
+ for M in range(1,L):
+  adc = nocoli.read(2) # read (high,low)
+  n = int.from_bytes(adc,byteorder='big')
+  ay=np.append(ay,n)
+  V[M]=np.log(abs(float(n)-Vref))
+ alpha,beta,coe = fitting(dx,V)
+
+# print(alpha,beta,coe)
+ aalpha=aalpha+alpha
+ abeta=np.append(abeta,beta)
+ acoe=acoe+coe
+###########################################################
+second2=time.time()
+print("time lapse=",second2-second1)
+
+###########################################################
+# (4) scale=4>256, 10*64*(4*ADC+interval/0.02s)
+dx=0.01
+for N in range(1,11):
+ for M in range(1,L):
+  adc = nocoli.read(2) # read (high,low)
+  n = int.from_bytes(adc,byteorder='big')
+  ay=np.append(ay,n)
+  V[M]=np.log(abs(float(n)-Vref))
+ fitting(dx,V)
+###########################################################
+second2=time.time()
+print("time lapse=",second2-second1)
+
+###########################################################
+# (5) scale=5>1024, 10*64*(4*ADC+interval/0.08s)
+dx=0.01
+for N in range(1,11):
+ for M in range(1,L):
+  adc = nocoli.read(2) # read (high,low)
+  n = int.from_bytes(adc,byteorder='big')
   ay=np.append(ay,n)
   V[M]=np.log(abs(float(n)-Vref))
  fitting(dx,V)
 
-# receive mega8535 results
- adc = nocoli.read(2) # read (high,low)
- a1 = int.from_bytes(adc,byteorder='big')
- adc = nocoli.read(2) # read (high,low)
- a2 = int.from_bytes(adc,byteorder='big')
-# print(a1,a2)
- alpha=a1+a2/256.0/256.0
-
- adc = nocoli.read(2) # read (high,low)
- a1 = int.from_bytes(adc,byteorder='big')
- adc = nocoli.read(2) # read (high,low)
- a2 = int.from_bytes(adc,byteorder='big')
-# print(a1,a2)
- beta=a1+a2/256.0/256.0
-
- adc = nocoli.read(2) # read (high,low)
- a1 = int.from_bytes(adc,byteorder='big')
- adc = nocoli.read(2) # read (high,low)
- a2 = int.from_bytes(adc,byteorder='big')
-# print(a1,a2)
- coe=2.0**a1*a2/256.0/256.0
-
- print('curve mega8535=',alpha,beta,coe)
- file2.write(str(alpha)+' '+str(beta)+' '+str(coe)+'\n')
-
+###########################################################
 second2=time.time()
 print("time lapse=",second2-second1)
-###########################################################
+
 for J in range(1,500):
    adc = nocoli.read(2) # read (high,low)
    n = int.from_bytes(adc,byteorder='big')
@@ -160,11 +201,20 @@ for J in range(1,500):
      break # NOCOLI 2^14 signal the end of one measurement run
    ay=np.append(ay,n)
 
-#J=len(ay)
-#for M in range(0,J):
-# file1.write(str(ay[M])+'\n')
+J=len(ay)
+for M in range(0,J):
+ file1.write(str(ay[M])+'\n')
 file1.close()
 
+aalpha=aalpha*0.1
+acoe=acoe*0.1
+beta1=(abeta[1]+abeta[3]+abeta[5]+abeta[7]+abeta[9])/5.0
+beta2=(abeta[2]+abeta[4]+abeta[6]+abeta[8])/4.0
+print("concentration=",aalpha)
+print("beta1=",beta1)
+print("beta2=",beta2)
+print("correlation coefficient=",acoe)
+file2.write(str(aalpha)+' '+str(beta1)+' '+str(beta2)+' '+str(acoe)+'\n')
 file2.close()
 
 plt.plot(ay)
