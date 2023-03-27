@@ -1,0 +1,28 @@
+Drill report for C:\Users\persan\Documents\persan_documents\PCB_projects\cwater\cwater\cwater.kicad_pcb
+Created on 2021-11-30 12:40:10
+
+Copper Layer Stackup:
+    =============================================================
+    L1 :  F.Cu                      front
+    L2 :  B.Cu                      back
+
+
+Drill file 'cwater-PTH.drl' contains
+    plated through holes:
+    =============================================================
+    T1  0,400mm  0,0157"  (10 holes)
+    T2  0,600mm  0,0236"  (4 holes)
+    T3  0,800mm  0,0315"  (74 holes)
+    T4  1,000mm  0,0394"  (12 holes)
+    T5  1,200mm  0,0472"  (2 holes)
+    T6  1,300mm  0,0512"  (2 holes)
+    T7  3,200mm  0,1260"  (4 holes)
+
+    Total plated holes count 108
+
+
+Drill file 'cwater-NPTH.drl' contains
+    unplated through holes:
+    =============================================================
+
+    Total unplated holes count 0
