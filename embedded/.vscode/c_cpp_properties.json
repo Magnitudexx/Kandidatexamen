@@ -10,6 +10,7 @@
             "includePath": [
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/include",
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/src",
+                "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/uart",
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/.pio/libdeps/uno/avr-debugger/avr8-stub",
                 ""
             ],
@@ -18,6 +19,7 @@
                 "path": [
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/include",
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/src",
+                    "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/uart",
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/.pio/libdeps/uno/avr-debugger/avr8-stub",
                     ""
                 ]

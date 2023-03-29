@@ -27,10 +27,9 @@
  * AVR8_USER_BAUDRATE - serial port baud rate for communication with the debugger.
  *   If not provided, default is 115200 for Arduino Uno, Mega, etc.
  *   Example: AVR8_USER_BAUDRATE=9600
- * 
- * AVR8_UART_NUMBER - which USART is used by the debugger. Default is 0 (use USART0). 
- *   On Arduino Mega, by using other USART than the UART0 you can use this debugger together with 
- *   the Arduino Serial functions. On Arduino Uno and other boards based on ATmega328 only 0 is available.
+ *
+ *
+ *
  *
  *
  * The following project were used (and combined) to create this stub:
@@ -213,35 +212,6 @@ extern "C" {
 	#define	AVR8_LOAD_SUPPORT	(0)
 #endif
 
-/**
- * UART module used by the debugger.
- * This select the serial communication peripheral used for communicating with the GDB.
- *  
- * This option only makes sense for Arduino Mega because the Atmega2560 and 1280
- * have 4 hardware UARTs. By using other UART than the UART0 you can use this debugger
- * together with the Arduino Serial functions.
- * For Arduino boards based on ATmega328 (like Uno, Nano,...) the only valid
- * option is 0 (to use UART0) because there are no other hardware UARTs.
- * 
- * Supported values for Atmega328 (UNO):
- * 0 - use USART0 (Arduino Serial cannot be used with the debugger)
-  *
- * Supported values for ATmega1284(P):
- * 0 - use USART0 
- * 1 - use USART1 
- * 
- * Supported values for Atmega2560 and Atmega1280:
- * 0 - use USART0 (Arduino Serial cannot be used with the debugger)
- * 1 - use USART1 (Rx=PD2=D19, Tx=PD3=D18)
- * 2 - use USART2 (Rx=PH0=D17, Tx=PH1=D16)
- * 3 - use USART3 (Rx=PJ0=D15, Tx=PJ1=D14)
- * 
- * Note: the number in AVR8_UART_NUMBER is used to generate register names in macros; 
- * don't put it into parentheses.
- */
-#ifndef AVR8_UART_NUMBER
-        #define AVR8_UART_NUMBER       0
-#endif
 
 /**
  * Maximum number of breakpoints supported.
@@ -289,7 +259,7 @@ void breakpoint(void);
  * The function appends "\n" to the msg.
  * Note that GDB will queue the messages until "\n" (0x0a) is received; then
  * it displays the messages in console.
-: */
+ */
 void debug_message(const char* msg);
 
 
@@ -300,4 +270,3 @@ void debug_message(const char* msg);
 
 
 #endif /* DRV_DEBUG_H_ */
-
