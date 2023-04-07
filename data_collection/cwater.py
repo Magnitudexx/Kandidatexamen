@@ -59,10 +59,14 @@ def fitting(dx,V):
  return alpha,beta,coe
 ###########################################################
 # pick measuring point
-print("Pick measuring point \n(1) Sea \n(2) Nissan \n(3) Tap Water \n")
-n = int(input("Pick (1-3):"))
-opt = ["sea", "nissan", "tap_water"]
-point = opt[n-1]
+opt = ["sea", "nissan", "tap_water", "other"]
+print("Pick measuring point \n(1) " + opt[0]+" \n(2) "+ opt[1]+" \n(3) "+ opt[2]+" \n(4) " + opt[3] + " \n")
+n = int(input("Pick (1-4):"))
+if n == 4:
+    name = input("Write name of other:")
+    point = opt[n-1] + "/" + name
+else:
+    point = opt[n-1] + "/"
 ###########################################################
 # connect cwater then do the following to find it
 import serial.tools.list_ports
@@ -102,8 +106,8 @@ print(b2.decode('ascii'))
 # initialize
 second1=time.time()
 date=datetime.datetime.now().date()
-filename1='./data/'+ point + '/data_'+str(date)+'.dat'
-filename2='./data/'+ point + '/value_'+str(date)+'.dat'
+filename1='./data/'+ point + 'data_'+str(date)+'.dat'
+filename2='./data/'+ point + 'value_'+str(date)+'.dat'
 file1 = open(filename1, "w")
 file2 = open(filename2, "w")
 L=65
