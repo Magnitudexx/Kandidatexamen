@@ -4,6 +4,7 @@
 # >pip install pyserial (when internet connected)
 
 import time
+import datetime
 import serial
 import numpy as np
 from scipy.optimize import curve_fit
@@ -65,6 +66,16 @@ def fitting(dx,V):
 
  return a,b,r2
 ###########################################################
+# pick measuring point
+opt = ["sea", "nissan", "tap_water", "other"]
+print("Pick measuring point \n(1) " + opt[0]+" \n(2) "+ opt[1]+" \n(3) "+ opt[2]+" \n(4) " + opt[3] + " \n")
+n = int(input("Pick (1-4):"))
+if n == 4:
+    name = input("Write name of other:")
+    point = opt[n-1] + "/" + name
+else:
+    point = opt[n-1] + "/"
+###########################################################
 
 # connect cwater then do the following to find it
 import serial.tools.list_ports
@@ -89,7 +100,7 @@ time.sleep(0.01)
 
 b1 = nocoli.readline() # return received by MCU
 b2=b1[0:len(b1)-1] # get rid \n at the end
-print(b2)
+print(b2)
 print(b2.decode('ascii'))
 b1 = nocoli.readline() # from nocoli 'Measure Y/N'
 K=len(b1)
@@ -105,8 +116,9 @@ print(b2.decode('ascii'))
 ###########################################################
 # initialize
 second1=time.time()
-filename1='adc'+str(int(second1))+'.dat'
-filename2='abc'+str(int(second1))+'.dat'
+date=datetime.datetime.now().date()
+filename1='./data/'+ point + 'data_'+str(date)+'.dat'
+filename2='./data/'+ point + 'value_'+str(date)+'.dat'
 file1 = open(filename1, "w")
 file2 = open(filename2, "w")
 L=64
