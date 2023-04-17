@@ -5,8 +5,7 @@
 #include <util/setbaud.h>
 
 #include "uart.h"
-FILE uart_out = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
-FILE uart_in = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_WRITE);
+FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
 
 int uart_putchar(char c, FILE *stream){
     if (c == '\n'){
@@ -18,13 +17,14 @@ return 0;
 }
 
 int uart_getchar(FILE *stream){
+    char c = 0;
     loop_until_bit_is_set(UCSR0A,RXC0);
-    
-    return UDR0;
+    c = UDR0;
+    return c;
 }
 void uart_init(void)
 {
-    
+    stdout = stdin = &uart_str;
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
     
@@ -35,12 +35,8 @@ void uart_init(void)
     #endif
 
     UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
-    UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
+    UCSR0B = _BV(RXEN0) | _BV(TXEN0);
     
     
     //redirect by default
-    #ifndef NO_UART_STD
-        stdout = &uart_out;
-        stdin = &uart_in;
-    #endif
 }
