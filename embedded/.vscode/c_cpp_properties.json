@@ -10,8 +10,12 @@
             "includePath": [
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/include",
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/src",
+                "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/memory",
+                "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/SPI",
+                "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/bluetooth",
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/uart",
                 "/home/philip/Programming_projects/Kandidatexamen/embedded/.pio/libdeps/uno/avr-debugger/avr8-stub",
+                "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/measure",
                 ""
             ],
             "browse": {
@@ -19,15 +23,20 @@
                 "path": [
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/include",
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/src",
+                    "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/memory",
+                    "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/SPI",
+                    "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/bluetooth",
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/uart",
                     "/home/philip/Programming_projects/Kandidatexamen/embedded/.pio/libdeps/uno/avr-debugger/avr8-stub",
+                    "/home/philip/Programming_projects/Kandidatexamen/embedded/lib/measure",
                     ""
                 ]
             },
             "defines": [
                 "F_CPU=16000000L",
-                "PLATFORMIO=60106",
+                "PLATFORMIO=60107",
                 "ARDUINO_AVR_UNO",
+                "AVR8_BREAKPOINT_MODE=1",
                 "__AVR_ATmega328P__",
                 ""
             ],
